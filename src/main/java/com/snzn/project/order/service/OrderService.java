@@ -1,6 +1,9 @@
 package com.snzn.project.order.service;
 
 import com.snzn.project.order.controller.model.OrderCompleteRequest;
+import com.snzn.project.order.controller.model.OrderDetailModel;
+import com.snzn.project.order.controller.model.OrderListResponse;
+import com.snzn.project.order.controller.model.OrderResponseModel;
 import com.snzn.project.order.controller.model.OrderSubmitRequest;
 import com.snzn.project.order.controller.model.OrderSubmitResponse;
 import com.snzn.project.order.repository.OrderDetailRepository;
@@ -72,6 +75,48 @@ public class OrderService {
             client.orderComplete(new OrderUpdateRequest(request.getOrderNo()));
             orderRepository.updateStatusByOrderNo(OrderStatus.COMPLETED, request.getOrderNo());
         }
+    }
+
+    public OrderListResponse list(String customerNo) {
+        List<OrderEntity> orderList;
+
+        if (customerNo == null) {
+            orderList = orderRepository.findAll();
+        } else {
+            orderList = orderRepository.findByCustomerNoAndStatus(customerNo, OrderStatus.COMPLETED);
+        }
+
+        List<OrderResponseModel> orderModelList = new ArrayList<>();
+        for (OrderEntity orderEntity : orderList) {
+            List<OrderDetail> orderDetailList = orderDetailRepository.findByOrderEntity(orderEntity);
+
+            OrderResponseModel responseModel = new OrderResponseModel(
+                    orderEntity.getOrderNo(),
+                    orderEntity.getCustomerNo(),
+                    orderEntity.getStatus(),
+                    orderEntity.getTotalPrice(),
+                    OrderService.convertOrderDetailEntityToModel(orderDetailList)
+            );
+            orderModelList.add(responseModel);
+        }
+        return new OrderListResponse(orderModelList);
+
+    }
+
+    public static List<OrderDetailModel> convertOrderDetailEntityToModel(List<OrderDetail> orderDetailList) {
+        List<OrderDetailModel> orderDetailModelList = new ArrayList<>();
+
+        for (OrderDetail orderDetail : orderDetailList) {
+            orderDetailModelList.add(new OrderDetailModel(
+                    orderDetail.getCategory(),
+                    orderDetail.getDefinition(),
+                    orderDetail.getBrand(),
+                    orderDetail.getModel(),
+                    orderDetail.getQuantity(),
+                    orderDetail.getPrice()
+            ));
+        }
+        return orderDetailModelList;
     }
 
 }

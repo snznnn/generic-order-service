@@ -36,6 +36,7 @@ public class OrderDetail extends BaseEntity {
     @Column(nullable = false)
     private String model;
 
+    @Column(nullable = false)
     private Integer quantity;
 
     @DecimalMax(value = "1000000.0", inclusive = false)

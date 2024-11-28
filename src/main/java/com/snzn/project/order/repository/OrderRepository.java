@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
 
@@ -15,5 +17,8 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
     @Modifying
     @Query("update OrderEntity o set o.status = :status where o.orderNo = :orderNo")
     void updateStatusByOrderNo(OrderStatus status, String orderNo);
+
+
+    List<OrderEntity> findByCustomerNoAndStatus(String customerNo, OrderStatus orderStatus);
 
 }
