@@ -28,5 +28,4 @@ public class OrderEntity extends BaseEntity {
     @Column(nullable = false)
     private BigDecimal totalPrice;
 
-
 }
