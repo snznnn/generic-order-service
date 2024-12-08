@@ -11,6 +11,7 @@ import com.snzn.project.order.repository.OrderRepository;
 import com.snzn.project.order.repository.entity.OrderDetail;
 import com.snzn.project.order.repository.entity.OrderEntity;
 import com.snzn.project.order.repository.entity.OrderStatus;
+import com.snzn.project.order.service.exception.PaymentFailedException;
 import com.snzn.project.order.service.external.StockServiceClient;
 import com.snzn.project.order.service.external.model.OrderCreateRequest;
 import com.snzn.project.order.service.external.model.OrderCreateResponse;
@@ -23,6 +24,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Slf4j
@@ -64,6 +66,7 @@ public class OrderService {
     }
 
     public void complete(OrderCompleteRequest request) {
+        sleepAFewSecond();
         if (request.getMockPaymentTool().equals("Fail")) {
             orderRepository.updateStatusByOrderNo(OrderStatus.CANCELED, request.getOrderNo());
             try {
@@ -71,9 +74,19 @@ public class OrderService {
             } catch (Exception e) {
                 log.error("Error log;", e);
             }
+            throw new PaymentFailedException();
         } else {
             client.orderComplete(new OrderUpdateRequest(request.getOrderNo()));
             orderRepository.updateStatusByOrderNo(OrderStatus.COMPLETED, request.getOrderNo());
+        }
+    }
+
+    private void sleepAFewSecond() {
+        int random = new Random().nextInt(1000) + 1000;
+        try {
+            Thread.sleep(random);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 

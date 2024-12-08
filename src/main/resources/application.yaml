@@ -2,7 +2,7 @@ spring:
   application:
     name: generic-order-service
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/postgres}
     password: mypass
     username: postgres
     hikari:
@@ -11,5 +11,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+feign:
+  url: ${FEIGN_URL:http://localhost:8082}
 server:
   port: 8081
