@@ -7,7 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 
-@FeignClient(value = "stock-service-client", url = "http://localhost:8082")
+@FeignClient(value = "stock-service-client", url = "${feign.url}")
 public interface StockServiceClient {
 
     @Valid
